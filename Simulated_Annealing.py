@@ -10,40 +10,51 @@ class SimulatedAnnealing():
         self.it = 0
         self.temp = None
         self.current = None
-        self.next = None
-        self.permutation_list = []
-
-        permut = permutations(self.stops_list, len(self.stops_list)) 
-        
-        for i in permut:
-            self.permutation_list.append(list(i))
-        print("la longitud de permutaciones es:")
-        print (len(self.permutation_list))
 
     def start(self):
-        self.current = self.permutation_list[0]
-        self.permutation_list.remove(self.current)
+        self.current = self.stops_list
+        next = self.current
+        best=self.current
+        cost_best=self.path_cost(best)
         while True:
             self.temp = self.temp_in - self.it
-
             if self.temp <= 0:
-                return self.current
-
+                return best #best
             try:
-                self.next = self.permutation_list[ random.randint( 0,len(self.permutation_list)-1 ) ]
-                self.permutation_list.remove(self.next)
+                permuts=random.sample(self.current,k=2)  #para agregar bahía de carga y descarga crear un list sin el primero y el último y luego aplicar misma lógica
+                #print (permuts[0])
+                #print (permuts[1])
+                print(self.current)
+                aux=next
+                c1=True
+                c2=True
+                for i in range(0,len(next)):
+                    if aux[i]==permuts[0] and c1:
+                        c1=False
+                        next[i]=permuts[1]
+                    if aux[i]==permuts[1] and c2:
+                        c2=False
+                        next[i]=permuts[0]
             except:
+                print ("Error")
                 pass
+            print(self.current)
+            print(next)
             cost_current = self.path_cost(self.current)
-            cost_next = self.path_cost(self.next)
+            cost_next = self.path_cost(next)
             dif = cost_next - cost_current
+            #print(dif)
             if dif < 0:
-                self.current = self.next
+                self.current = next
+                if (cost_current < cost_best):
+                    best=self.current
+                    cost_best=self.path_cost(best)
             else:
                 prob = random.random()
                 if prob < math.exp(dif/self.temp):
-                    self.current = self.next
+                    self.current = next
             self.it = self.it + 1
+            next=self.current
 
     def path_cost(self,path):
         cost = 0
@@ -55,4 +66,5 @@ class SimulatedAnnealing():
                 elif path[0+count] == i[1] and path[1+count] == i[0]:
                     cost = cost + i[2]
             count = count + 1
+        print(cost)
         return cost
