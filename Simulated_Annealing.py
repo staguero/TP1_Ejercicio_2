@@ -1,6 +1,9 @@
 import random
 from itertools import permutations 
 import math
+import copy 
+#USO DE COPY.DEEPCOPY() PARA QUE LOS = NO APUNTEN AL MISMO ESPACIO DE MEMORIA 
+#(NO SE PORQUE SUCEDE ESTO Y NO PUEDO USAR "COPY" O "[:]")
 
 class SimulatedAnnealing():
     def __init__(self,stops_list,cost_list,temp_in):
@@ -12,9 +15,9 @@ class SimulatedAnnealing():
         self.current = None
 
     def start(self):
-        self.current = self.stops_list
-        next = self.current
-        best=self.current
+        self.current = copy.deepcopy(self.stops_list)
+        next = copy.deepcopy(self.current)
+        best=copy.deepcopy(self.current)
         cost_best=self.path_cost(best)
         while True:
             self.temp = self.temp_in - self.it
@@ -22,10 +25,7 @@ class SimulatedAnnealing():
                 return best #best
             try:
                 permuts=random.sample(self.current,k=2)  #para agregar bahía de carga y descarga crear un list sin el primero y el último y luego aplicar misma lógica
-                #print (permuts[0])
-                #print (permuts[1])
-                print(self.current)
-                aux=next
+                aux=copy.deepcopy(next)
                 c1=True
                 c2=True
                 for i in range(0,len(next)):
@@ -38,23 +38,20 @@ class SimulatedAnnealing():
             except:
                 print ("Error")
                 pass
-            print(self.current)
-            print(next)
             cost_current = self.path_cost(self.current)
             cost_next = self.path_cost(next)
             dif = cost_next - cost_current
-            #print(dif)
             if dif < 0:
-                self.current = next
+                self.current = copy.deepcopy(next)
                 if (cost_current < cost_best):
-                    best=self.current
+                    best=copy.deepcopy(self.current)
                     cost_best=self.path_cost(best)
             else:
                 prob = random.random()
                 if prob < math.exp(dif/self.temp):
-                    self.current = next
+                    self.current = copy.deepcopy(next)
             self.it = self.it + 1
-            next=self.current
+            next=copy.deepcopy(self.current)
 
     def path_cost(self,path):
         cost = 0
@@ -66,5 +63,4 @@ class SimulatedAnnealing():
                 elif path[0+count] == i[1] and path[1+count] == i[0]:
                     cost = cost + i[2]
             count = count + 1
-        print(cost)
         return cost
