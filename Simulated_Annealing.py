@@ -1,6 +1,9 @@
 import random
 from itertools import permutations 
 import math
+import copy 
+#USO DE COPY.DEEPCOPY() PARA QUE LOS = NO APUNTEN AL MISMO ESPACIO DE MEMORIA 
+#(NO SE PORQUE SUCEDE ESTO Y NO PUEDO USAR "COPY" O "[:]")
 
 class SimulatedAnnealing():
     def __init__(self,stops_list,cost_list,temp_in):
@@ -10,40 +13,51 @@ class SimulatedAnnealing():
         self.it = 0
         self.temp = None
         self.current = None
-        self.next = None
-        self.permutation_list = []
-
-        permut = permutations(self.stops_list, len(self.stops_list)) 
-        
-        for i in permut:
-            self.permutation_list.append(list(i))
-        print("la longitud de permutaciones es:")
-        print (len(self.permutation_list))
 
     def start(self):
-        self.current = self.permutation_list[0]
-        self.permutation_list.remove(self.current)
+        self.current = copy.deepcopy(self.stops_list)
+        next = copy.deepcopy(self.current)
+        best=copy.deepcopy(self.current)
+        cost_best=self.path_cost(best)
         while True:
             self.temp = self.temp_in - self.it
-
             if self.temp <= 0:
-                return self.current
-
+                return [best, cost_best] 
             try:
-                self.next = self.permutation_list[ random.randint( 0,len(self.permutation_list)-1 ) ]
-                self.permutation_list.remove(self.next)
+                permuts=random.sample(self.current,k=2) 
+                aux=copy.deepcopy(next)
+                c1=True
+                c2=True
+                for i in range(0,len(next)):
+                    if aux[i]==permuts[0] and c1:
+                        c1=False
+                        next[i]=permuts[1]
+                    if aux[i]==permuts[1] and c2:
+                        c2=False
+                        next[i]=permuts[0]
             except:
+                print ("Error")
                 pass
             cost_current = self.path_cost(self.current)
-            cost_next = self.path_cost(self.next)
+            cost_next = self.path_cost(next)
             dif = cost_next - cost_current
+            
             if dif < 0:
-                self.current = self.next
+                self.current = copy.deepcopy(next)
+                cost_current = cost_next
+                if (cost_current < cost_best):
+                    best=copy.deepcopy(self.current)
+                    cost_best=cost_current
             else:
                 prob = random.random()
-                if prob < math.exp(dif/self.temp):
-                    self.current = self.next
+                #print('La diferencia es: %f' %(dif))
+                #print('La temperatura es: %f' %(self.temp))
+                #print('La probabilidad es: %f' %(math.exp(-1/self.temp)))
+                #print()
+                if prob < math.exp(-dif/self.temp):
+                    self.current = copy.deepcopy(next)
             self.it = self.it + 1
+            next=copy.deepcopy(self.current)
 
     def path_cost(self,path):
         cost = 0

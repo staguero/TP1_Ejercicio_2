@@ -2,6 +2,11 @@ import numpy as np
 from Node import *
 from A_Star import *
 from Simulated_Annealing import *
+import os
+
+def dibujo():
+        for i in range(mapa_filas):
+            print(mapa_dibujo[i])
 
 if __name__ == "__main__":
 
@@ -51,12 +56,11 @@ if __name__ == "__main__":
                 mapa_dibujo[i][j]="0 "
             else:
                 mapa_dibujo[i][j]=mapa[i][j].id[5:]
-    for i in range(mapa_filas):
-        print(mapa_dibujo[i])
-
+    dibujo()
     stops = input("Escriba las paradas separadas por un espacio, ej:2 4 7\n")
     i=0
     stops_list = stops.split(" ")
+    stops_list = list(set(stops_list))
     print(stops_list)
     #LISTA DE COSTOS
     cost_list = []
@@ -79,8 +83,13 @@ if __name__ == "__main__":
             cost_list.append([inicio,fin,a_star.path_cost])
         count = count + 1
 
-    simulated_annealing = SimulatedAnnealing(stops_list,cost_list,100) # EL 100 ES LA TEMPERATURA INICIAL (NUMERO DE ITERACIONES BASICAMENTE)
+    simulated_annealing = SimulatedAnnealing(stops_list,cost_list,10000) # EL 100 ES LA TEMPERATURA INICIAL (NUMERO DE ITERACIONES BASICAMENTE)
     lowcost_path=simulated_annealing.start()
-    print("El camino mas optimo es:")
-    print(lowcost_path)
+    os.system('cls')
+    dibujo()
+    print("El mejor camino encontrado es:")
+    print(lowcost_path[0])
+    print("Y el costo del recorrido es: %f " %(lowcost_path[1]))
     input()
+
+    
