@@ -41,11 +41,7 @@ class SimulatedAnnealing():
             cost_current = self.path_cost(self.current)
             cost_next = self.path_cost(next)
             dif = cost_next - cost_current
-            print(self.temp)
-            print(cost_current)
-            print(cost_next)
-            print(math.exp(-dif/self.temp))
-            print()
+            
             if dif < 0:
                 self.current = copy.deepcopy(next)
                 cost_current = cost_next
@@ -54,6 +50,11 @@ class SimulatedAnnealing():
                     cost_best=cost_current
             else:
                 prob = random.random()
+                print(self.temp)
+                print(cost_current)
+                print(cost_next)
+                print(math.exp(-dif/self.temp))
+                print()
                 if prob < math.exp(-dif/self.temp):
                     self.current = copy.deepcopy(next)
             self.it = self.it + 1
