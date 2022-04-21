@@ -22,9 +22,9 @@ class SimulatedAnnealing():
         while True:
             self.temp = self.temp_in - self.it
             if self.temp <= 0:
-                return best #best
+                return best 
             try:
-                permuts=random.sample(self.current,k=2)  #para agregar bahía de carga y descarga crear un list sin el primero y el último y luego aplicar misma lógica
+                permuts=random.sample(self.current,k=2) 
                 aux=copy.deepcopy(next)
                 c1=True
                 c2=True
@@ -41,14 +41,20 @@ class SimulatedAnnealing():
             cost_current = self.path_cost(self.current)
             cost_next = self.path_cost(next)
             dif = cost_next - cost_current
+            print(self.temp)
+            print(cost_current)
+            print(cost_next)
+            print(math.exp(-dif/self.temp))
+            print()
             if dif < 0:
                 self.current = copy.deepcopy(next)
+                cost_current = cost_next
                 if (cost_current < cost_best):
                     best=copy.deepcopy(self.current)
-                    cost_best=self.path_cost(best)
+                    cost_best=cost_current
             else:
                 prob = random.random()
-                if prob < math.exp(dif/self.temp):
+                if prob < math.exp(-dif/self.temp):
                     self.current = copy.deepcopy(next)
             self.it = self.it + 1
             next=copy.deepcopy(self.current)

@@ -57,6 +57,7 @@ if __name__ == "__main__":
     stops = input("Escriba las paradas separadas por un espacio, ej:2 4 7\n")
     i=0
     stops_list = stops.split(" ")
+    stops_list = list(set(stops_list))
     print(stops_list)
     #LISTA DE COSTOS
     cost_list = []
@@ -79,8 +80,7 @@ if __name__ == "__main__":
             cost_list.append([inicio,fin,a_star.path_cost])
         count = count + 1
 
-    simulated_annealing = SimulatedAnnealing(stops_list,cost_list,100) # EL 100 ES LA TEMPERATURA INICIAL (NUMERO DE ITERACIONES BASICAMENTE)
+    simulated_annealing = SimulatedAnnealing(stops_list,cost_list,10000) # EL 100 ES LA TEMPERATURA INICIAL (NUMERO DE ITERACIONES BASICAMENTE)
     lowcost_path=simulated_annealing.start()
     print("El camino mas optimo es:")
     print(lowcost_path)
-    input()

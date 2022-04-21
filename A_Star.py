@@ -5,7 +5,7 @@ class A_Star():
         self.mapa = mapa
         self.current_node = current_node
         self.target_node = target_node
-        self.path_cost = cost #AGREGADO
+        self.path_cost = cost
         self.current_node.parent = self.current_node    #AGREGADO
     
     def in_close_list(self,node):
