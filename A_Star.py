@@ -24,7 +24,7 @@ class A_Star():
 
     def check_list(self,i,j,minF):
         try:
-            if self.mapa[i][j].id[0:5] == "Shelf":
+            if self.mapa[i][j].id[0:5] == "Shelf" or self.mapa[i][j].id[0:5] == "Bahía":
                 if self.mapa[i][j].id == self.target_node.id: 
                     if minF.id != self.current_node.id:
                         self.mapa[i][j].parent = minF

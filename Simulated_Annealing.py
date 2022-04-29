@@ -2,8 +2,7 @@ import random
 from itertools import permutations 
 import math
 import copy 
-#USO DE COPY.DEEPCOPY() PARA QUE LOS = NO APUNTEN AL MISMO ESPACIO DE MEMORIA 
-#(NO SE PORQUE SUCEDE ESTO Y NO PUEDO USAR "COPY" O "[:]")
+#IMPLEMENTAR QUE LA TEMPERATURA ARRANQUE EN ITERACION/10 Y A SU VEZ SE ACTUALIZE -0.1*ITERACION
 
 class SimulatedAnnealing():
     def __init__(self,stops_list,cost_list,temp_in):
@@ -19,12 +18,21 @@ class SimulatedAnnealing():
         next = copy.deepcopy(self.current)
         best=copy.deepcopy(self.current)
         cost_best=self.path_cost(best)
-        while True:
+        it=[]
+        camino=[]
+        probabilidad=[]
+        temperatura=[]
+        expo=[]
+        diferencias=[]
+        while True: 
             self.temp = self.temp_in - self.it
             if self.temp <= 0:
-                return [best, cost_best] 
+                return [best, cost_best, it, camino, diferencias, probabilidad, temperatura] 
             try:
-                permuts=random.sample(self.current,k=2) 
+                
+                permuts=random.sample(self.current,k=2)
+                while 20000 in permuts:
+                    permuts=random.sample(self.current,k=2)
                 aux=copy.deepcopy(next)
                 c1=True
                 c2=True
@@ -41,7 +49,6 @@ class SimulatedAnnealing():
             cost_current = self.path_cost(self.current)
             cost_next = self.path_cost(next)
             dif = cost_next - cost_current
-            
             if dif < 0:
                 self.current = copy.deepcopy(next)
                 cost_current = cost_next
@@ -50,15 +57,18 @@ class SimulatedAnnealing():
                     cost_best=cost_current
             else:
                 prob = random.random()
-                #print('La diferencia es: %f' %(dif))
-                #print('La temperatura es: %f' %(self.temp))
-                #print('La probabilidad es: %f' %(math.exp(-1/self.temp)))
-                #print()
-                if prob < math.exp(-dif/self.temp):
+                if prob < dif*math.exp((-((self.temp_in-self.temp)/(self.temp_in)))):
                     self.current = copy.deepcopy(next)
             self.it = self.it + 1
-            next=copy.deepcopy(self.current)
+            it.append(self.it)
+            
+            probabilidad.append(math.exp((-((self.temp_in-self.temp)/(self.temp_in)))))
+            temperatura.append(self.temp)
+            diferencias.append(dif)
 
+            next=copy.deepcopy(self.current)
+            camino.append(cost_current)
+            
     def path_cost(self,path):
         cost = 0
         count = 0
