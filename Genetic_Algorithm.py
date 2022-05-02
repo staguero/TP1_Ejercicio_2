@@ -89,7 +89,8 @@ class Genetic_Algorithm():
             probabilities=[] #esta lista es momentanea, se genera en cada iteracion de nuevo
             for j in range(0,flag): #voy de cero hasta la mitad de la lista
                #multiplico cada fitness por un numero entre 0 y 1, lo que dijo el santi
-               probabilities.append(ordered_cost[j]*random.random())
+               for h in range(0,flag):
+                   probabilities.append(ordered_cost[h]*random.random())
                #Itero dos veces, en donde elijo los 2 fitness más grandes y guardo sus posiciones
                for m in range(0,2):
                    max=max(probabilities) #saco el max
