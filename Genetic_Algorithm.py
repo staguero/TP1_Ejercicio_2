@@ -1,3 +1,4 @@
+from itertools import combinations
 from crear_mapa import *
 from A_Star import *
 from Simulated_Annealing import *
@@ -72,17 +73,30 @@ class Genetic_Algorithm():
             ordered_population.append(self.population[pos])
 
         #Poblacion PAR
+        #if len(ordered_population)%2==0:
+        #    flag=int(len(ordered_population)/2)
+        #    combinations=[]
+        #    for j in range(2,flag+1):
+        #        combinations.append(1)
+        #        combinations.append(j)
+        #    combinations.append(2)
+        #    combinations.append(3)
+        #else: 
+        #    pass #POBLACION IMPAR? VER
         if len(ordered_population)%2==0:
-            flag=int(len(ordered_population)/2)
-            combinations=[]
-            for j in range(2,flag+1):
-                combinations.append(1)
-                combinations.append(j)
-            combinations.append(2)
-            combinations.append(3)
-        else: 
-            pass #POBLACION IMPAR? VER
-
+            flag=int(len(ordered_population)/2) #trabajo con la mitad más alta
+            combinations=[] #esta lista es la que entrego
+            probabilities=[] #esta lista es momentanea, se genera en cada iteracion de nuevo
+            for j in range(0,flag): #voy de cero hasta la mitad de la lista
+               #multiplico cada fitness por un numero entre 0 y 1, lo que dijo el santi
+               probabilities.append(ordered_cost[j]*random.random())
+               #Itero dos veces, en donde elijo los 2 fitness más grandes y guardo sus posiciones
+               for m in range(0,2):
+                   max=max(probabilities) #saco el max
+                   position_max=probabilities.index(max) #encuentro su posicion en la lista
+                   combinations.append(position_max) #guardo esa posicion max
+                   probabilities[position_max]=0 #lo hago 0 así en la 2 iteracion no lo encuentra
+        
         return ordered_population,combinations
 
     def mutation(self,lista):
@@ -112,7 +126,11 @@ class Genetic_Algorithm():
             for individual in self.population:
                 map = crear_mapa(columnas_estante,estantes_f,estantes_c,individual)
                 total_cost_list.append(self.fitness(map,mapa_filas,mapa_columnas))
-
+            
+            #Agregado este cálculo de probabilidad
+            for k in range(0,len(total_cost_list)):
+                total_cost_list[k]=1/total_cost_list[k]
+            
             ord_population,combinations=self.selection(total_cost_list)
             new_population=[]
             self.best_individual = ord_population[0]
