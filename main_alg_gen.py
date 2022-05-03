@@ -17,9 +17,9 @@ for i in orders:
     i.append(20000)
 
 n_shelfs = 16
-n_individuals = 10
+n_individuals = 14
 object=Genetic_Algorithm(n_shelfs,n_individuals,orders)
-best_individual = object.start(10,2,2,2)
+best_individual = object.start(15,2,2,2)
 print("Mejor individuo")
 print(best_individual)
 mapa=crear_mapa(2,2,2,best_individual)

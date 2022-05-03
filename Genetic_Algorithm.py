@@ -1,8 +1,10 @@
+from copy import deepcopy
 from itertools import combinations
 from crear_mapa import *
 from A_Star import *
 from Simulated_Annealing import *
 import random
+#from copy import deepcopy  PARA CROSSOVER PMX
 
 
 class Genetic_Algorithm():
@@ -102,7 +104,7 @@ class Genetic_Algorithm():
         return lista
     
     def crossover(self,father_1,father_2):
-        cut_1=self.n_shelfs//3
+        """cut_1=self.n_shelfs//3
         cut_2=cut_1*2
         son_1=[0]*self.n_shelfs
         son_2=[0]*self.n_shelfs
@@ -113,7 +115,24 @@ class Genetic_Algorithm():
         son_1=self.generation(father_1,son_1,cut_1,cut_2)
         son_2=self.generation(father_2,son_2,cut_1,cut_2)
 
+        return son_1,son_2"""
+        cut_point = random.randint(0,len(father_1)-2) #menos 2 para evitar que sea una copia igual al padre
+        son_1 = deepcopy(father_2)
+        for pos_f1,value_f1 in enumerate(father_1):
+            if pos_f1 <= cut_point:
+                pos_f2 = son_1.index(value_f1)
+                son_1[pos_f2] = son_1[pos_f1]
+                son_1[pos_f1] = value_f1
+
+        son_2 = deepcopy(father_1)
+        for pos_f2,value_f2 in enumerate(father_2):
+            if pos_f2 <= cut_point:
+                pos_f1 = son_2.index(value_f2)
+                son_2[pos_f1] = son_2[pos_f2]
+                son_2[pos_f2] = value_f2
+        
         return son_1,son_2
+    
     
     def generation(self,father,son,cut_1,cut_2):
         count_1=0
@@ -149,10 +168,15 @@ class Genetic_Algorithm():
             for individual in self.population:
                 map = crear_mapa(columnas_estante,estantes_f,estantes_c,individual)
                 total_cost_list.append(self.fitness(map,mapa_filas,mapa_columnas))
-            
-            n = sum(total_cost_list)
+            s = sum(total_cost_list)
+
+            print("Suma de costos de cada individuo (mapa) de la poblacion:")
+            print(s)
+            print("Individuo de esa poblacion con mejor fitnness tiene el siguiente costo:")
+            print(min(total_cost_list))
+            print()
             for k in range(0,len(total_cost_list)):
-                total_cost_list[k]=total_cost_list[k]/n
+                total_cost_list[k]=total_cost_list[k]/s
 
             ord_population,combinations=self.selection(total_cost_list) 
             new_population=[]
