@@ -11,13 +11,37 @@ P14
 P15
 
 Order 2
-P1
-P12
 P10
 P11
+P1
+P12
 P7
 P9
 P13
 P2
 P16
 P3
+
+Order 3
+P10
+P11
+P1
+P7
+P8
+P15
+P16
+P2
+P12
+P3
+
+Order 4
+P10
+P11
+P1
+P9
+P8
+P13
+P2
+P7
+P4
+P5

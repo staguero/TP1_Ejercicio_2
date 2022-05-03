@@ -25,5 +25,7 @@ def crear_mapa(columnas_estante,estantes_f,estantes_c,individuo): #individuo es 
                 col+=1
                 valor+=1
             valor+=columnas_estante
-
+    #Bahía de carga
+    bahiacarga=20000
+    mapa[0][0].setID("Bahia" + str(bahiacarga)) 
     return mapa

@@ -2,7 +2,6 @@ from itertools import combinations
 from crear_mapa import *
 from A_Star import *
 from Simulated_Annealing import *
-from crossover import *
 import random
 
 
@@ -13,12 +12,11 @@ class Genetic_Algorithm():
         self.orders=orders
 
         self.population=[]
-        self.best_individual = None
 
     def create_individual(self):
         value = 1
         individual = [0] * self.n_shelfs
-        while value < self.n_shelfs:
+        while value <= self.n_shelfs:
             pos=random.randint(0,self.n_shelfs-1)
             if individual[pos]==0:
                 individual[pos]=value
@@ -34,7 +32,6 @@ class Genetic_Algorithm():
             self.population.append(self.create_individual())
 
     def fitness(self,map,mapa_filas,mapa_columnas):
-        global current_node,target_node
         total_cost = 0
         for order in self.orders:
             stops_list=order
@@ -62,42 +59,29 @@ class Genetic_Algorithm():
             simulated_annealing = SimulatedAnnealing(stops_list,cost_list,temp) 
             lowcost_path = simulated_annealing.start()
             total_cost = lowcost_path[1] + total_cost
-
         return total_cost
 
     def selection(self,total_cost_list):
-        ordered_cost=sorted(total_cost_list, reverse=True)
+        ordered_cost=sorted(total_cost_list)
         ordered_population=[]
         for i in ordered_cost:
             pos=total_cost_list.index(i)
             ordered_population.append(self.population[pos])
 
-        #Poblacion PAR
-        #if len(ordered_population)%2==0:
-        #    flag=int(len(ordered_population)/2)
-        #    combinations=[]
-        #    for j in range(2,flag+1):
-        #        combinations.append(1)
-        #        combinations.append(j)
-        #    combinations.append(2)
-        #    combinations.append(3)
-        #else: 
-        #    pass #POBLACION IMPAR? VER
         if len(ordered_population)%2==0:
-            flag=int(len(ordered_population)/2) #trabajo con la mitad más alta
-            combinations=[] #esta lista es la que entrego
-            probabilities=[] #esta lista es momentanea, se genera en cada iteracion de nuevo
-            for j in range(0,flag): #voy de cero hasta la mitad de la lista
-               #multiplico cada fitness por un numero entre 0 y 1, lo que dijo el santi
-               for h in range(0,flag):
+            combinations=[] 
+            probabilities=[] 
+            for j in range(0,int(len(ordered_population)/2)):
+                for h in range(0,int(len(ordered_population)/2)):
                    probabilities.append(ordered_cost[h]*random.random())
-               #Itero dos veces, en donde elijo los 2 fitness más grandes y guardo sus posiciones
-               for m in range(0,2):
-                   max=max(probabilities) #saco el max
-                   position_max=probabilities.index(max) #encuentro su posicion en la lista
-                   combinations.append(position_max) #guardo esa posicion max
-                   probabilities[position_max]=0 #lo hago 0 así en la 2 iteracion no lo encuentra
-        
+
+                for m in range(0,2):
+                   minim=min(probabilities)
+                   position_min=probabilities.index(minim) 
+                   combinations.append(position_min) 
+                   probabilities[position_min]=0
+
+                probabilities.clear()
         return ordered_population,combinations
 
     def mutation(self,lista):
@@ -116,6 +100,44 @@ class Genetic_Algorithm():
         lista[pos2]=aux1
 
         return lista
+    
+    def crossover(self,father_1,father_2):
+        cut_1=self.n_shelfs//3
+        cut_2=cut_1*2
+        son_1=[0]*self.n_shelfs
+        son_2=[0]*self.n_shelfs
+        for i in range(cut_1,cut_2+1):
+            son_1[i]=father_2[i]
+            son_2[i]=father_1[i]
+
+        son_1=self.generation(father_1,son_1,cut_1,cut_2)
+        son_2=self.generation(father_2,son_2,cut_1,cut_2)
+
+        return son_1,son_2
+    
+    def generation(self,father,son,cut_1,cut_2):
+        count_1=0
+        for j in range(cut_2+1,self.n_shelfs): 
+            if father[j] not in son[cut_1:cut_2+1]:
+                son[j-count_1]=father[j]
+                last_position=j-count_1
+            else:
+                count_1+=1
+        pos_in=last_position+1        
+        amount=self.n_shelfs-pos_in
+        count_2=0
+
+        for t in range(0,cut_2+amount):
+            if father[t] not in son[cut_1:cut_2+1]:
+                if pos_in <= self.n_shelfs-1:
+                    son[pos_in]=father[t]
+                    pos_in+=1
+                else:
+                    son[t-amount-count_2]=father[t]
+            else:
+                count_2+=1
+    
+        return son
         
     def start(self,n_it,columnas_estante,estantes_f,estantes_c):
         it = 0
@@ -128,17 +150,19 @@ class Genetic_Algorithm():
                 map = crear_mapa(columnas_estante,estantes_f,estantes_c,individual)
                 total_cost_list.append(self.fitness(map,mapa_filas,mapa_columnas))
             
-            #Agregado este cálculo de probabilidad
+            n = sum(total_cost_list)
             for k in range(0,len(total_cost_list)):
-                total_cost_list[k]=1/total_cost_list[k]
-            
-            ord_population,combinations=self.selection(total_cost_list)
+                total_cost_list[k]=total_cost_list[k]/n
+
+            ord_population,combinations=self.selection(total_cost_list) 
             new_population=[]
-            self.best_individual = ord_population[0]
-            for t in range(0,int(len(ord_population)/2)):
-                hijo1,hijo2=crossover(ord_population[combinations[t]],ord_population[combinations[t+1]])
-                new_population.append(self.mutation(hijo1))
-                new_population.append(self.mutation(hijo2))
+            best_individual = ord_population[0]
+            for t in range(0,int(len(combinations))-1,2):
+                son_1,son_2=self.crossover(ord_population[combinations[t]],ord_population[combinations[t+1]])
+                new_population.append(self.mutation(son_1))
+                new_population.append(self.mutation(son_2))
             
             self.population.clear()
             self.population = new_population
+            it += 1
+        return best_individual
