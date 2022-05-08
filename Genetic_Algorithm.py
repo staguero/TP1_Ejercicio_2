@@ -176,29 +176,34 @@ class Genetic_Algorithm():
         mapa_filas=2*estantes_f+4+(estantes_f-1)*2
         mapa_columnas=estantes_c*columnas_estante+4+(estantes_c-1)*2
         self.create_population()
+        cost_min = 99999
+        flag=0
         while it < n_it:
             total_cost_list = []
             for individual in self.population:
                 map = crear_mapa(columnas_estante,estantes_f,estantes_c,individual)
                 total_cost_list.append(self.fitness(map,mapa_filas,mapa_columnas))
             s = sum(total_cost_list)
-
+            if min(total_cost_list) < cost_min:
+                cost_min = min(total_cost_list)
+                flag=1
             print("Suma de costos de cada individuo (mapa) de la poblacion:")
             print(s)
-            print("Individuo de esa poblacion con mejor fitnness tiene el siguiente costo:")
-            print(min(total_cost_list))
+            print("Individuo que ha tenido mejor costo hasta ahora: ")
+            print(cost_min)
             print()
 
             for k in range(0,len(total_cost_list)):
                 total_cost_list[k]=total_cost_list[k]/s
                 total_cost_list[k]=(1/total_cost_list[k])/100
 
-            print("LISTA DE COSTOS")
-            print(total_cost_list)
-
             ord_population,combinations=self.selection(total_cost_list) 
             new_population=[]
-            best_individual = ord_population[0]
+
+            if flag == 1:
+                best_individual = ord_population[len(self.population)-1]
+                flag = 0
+
             for t in range(0,int(len(combinations))-1,2):
                 son_1,son_2=self.crossover(ord_population[combinations[t]],ord_population[combinations[t+1]])
                 new_population.append(self.mutation(son_1))

@@ -5,9 +5,9 @@ def dibujo():
     for i in range(mapa_filas):
         print(mapa_dibujo[i])
 
-columnas_estante=2
-estantes_f=2
-estantes_c=2
+columnas_estante=3
+estantes_f=3
+estantes_c=3
 mapa_filas = 2*estantes_f+4+(estantes_f-1)*2
 mapa_columnas= estantes_c*columnas_estante+4+(estantes_c-1)*2
 
