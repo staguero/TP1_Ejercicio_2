@@ -63,12 +63,12 @@ class Genetic_Algorithm():
             total_cost = lowcost_path[1] + total_cost
         return total_cost
 
-    def selection(total_cost_list,population):
+    def selection(self,total_cost_list):
         ordered_cost=sorted(total_cost_list)
         ordered_population=[]
         for i in ordered_cost:
             pos=total_cost_list.index(i)
-            ordered_population.append(population[pos])
+            ordered_population.append(self.population[pos])
 
         probability=[]
         cost=0
@@ -192,6 +192,9 @@ class Genetic_Algorithm():
             for k in range(0,len(total_cost_list)):
                 total_cost_list[k]=total_cost_list[k]/s
                 total_cost_list[k]=(1/total_cost_list[k])/100
+
+            print("LISTA DE COSTOS")
+            print(total_cost_list)
 
             ord_population,combinations=self.selection(total_cost_list) 
             new_population=[]
