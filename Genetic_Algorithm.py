@@ -4,8 +4,9 @@ from crear_mapa import *
 from A_Star import *
 from Simulated_Annealing import *
 import random
-#from copy import deepcopy  PARA CROSSOVER PMX
+import time 
 
+random.seed(time.process_time)
 
 class Genetic_Algorithm():
     def __init__(self,n_shelfs,n_individuals,orders):
@@ -50,7 +51,6 @@ class Genetic_Algorithm():
                                     current_node = map[i][j]
                                 if map[i][j].id[5:]==fin:
                                     target_node = map[i][j]
-
                     a_star = A_Star(map,current_node,target_node)
                     a_star.start_method(mapa_columnas,mapa_filas)
 
@@ -63,44 +63,57 @@ class Genetic_Algorithm():
             total_cost = lowcost_path[1] + total_cost
         return total_cost
 
-    def selection(self,total_cost_list):
+    def selection(total_cost_list,population):
         ordered_cost=sorted(total_cost_list)
         ordered_population=[]
         for i in ordered_cost:
             pos=total_cost_list.index(i)
-            ordered_population.append(self.population[pos])
+            ordered_population.append(population[pos])
 
-        if len(ordered_population)%2==0:
-            combinations=[] 
-            probabilities=[] 
-            for j in range(0,int(len(ordered_population)/2)):
-                for h in range(0,int(len(ordered_population)/2)):
-                   probabilities.append(ordered_cost[h]*random.random())
+        probability=[]
+        cost=0
+        for i in range(int(len(ordered_cost)/2),len(ordered_cost)):
+            cost=cost+ordered_cost[i]
+            probability.append(cost)
+        probability.insert(0,0)
 
-                for m in range(0,2):
-                   minim=min(probabilities)
-                   position_min=probabilities.index(minim) 
-                   combinations.append(position_min) 
-                   probabilities[position_min]=0
+        combinations_aux=[] 
+        combinations = []
+        for j in range(0,int(len(ordered_population)/2)): 
+            count = 0
+            while count < 2:
+                indicator=random.uniform(0,max(probability))
+                for k in range(0,len(probability)-1): 
+                    if probability[k]<indicator<=probability[k+1]:
+                        position=int(len(ordered_population)/2)+k
+                        break
 
-                probabilities.clear()
+                if position not in combinations_aux:
+                    combinations_aux.append(position)
+                    count += 1
+
+            combinations.append(combinations_aux[0])
+            combinations.append(combinations_aux[1])
+            combinations_aux.clear()
+
         return ordered_population,combinations
 
     def mutation(self,lista):
-        while True:
-            pos1=random.randint(0,len(lista)-1)
-            pos2=random.randint(0,len(lista)-1)
-            if pos1==pos2:
+        prob = random.random()
+        if prob < 0.2:
+            while True:
+                pos1=random.randint(0,len(lista)-1)
                 pos2=random.randint(0,len(lista)-1)
-            else:
-                break
+                if pos1==pos2:
+                    pos2=random.randint(0,len(lista)-1)
+                else:
+                    break
 
-        aux1=lista[pos1]
-        aux2=lista[pos2]
+            aux1=lista[pos1]
+            aux2=lista[pos2]
 
-        lista[pos1]=aux2
-        lista[pos2]=aux1
-
+            lista[pos1]=aux2
+            lista[pos2]=aux1
         return lista
     
     def crossover(self,father_1,father_2):
@@ -175,8 +188,10 @@ class Genetic_Algorithm():
             print("Individuo de esa poblacion con mejor fitnness tiene el siguiente costo:")
             print(min(total_cost_list))
             print()
+
             for k in range(0,len(total_cost_list)):
                 total_cost_list[k]=total_cost_list[k]/s
+                total_cost_list[k]=(1/total_cost_list[k])/100
 
             ord_population,combinations=self.selection(total_cost_list) 
             new_population=[]

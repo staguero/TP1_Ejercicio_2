@@ -16,13 +16,13 @@ for i in orders:
     i.insert(0,20000)
     i.append(20000)
 
-n_shelfs = 16
-n_individuals = 14
+n_shelfs = columnas_estante*2*estantes_c*estantes_f
+n_individuals = 10
 object=Genetic_Algorithm(n_shelfs,n_individuals,orders)
-best_individual = object.start(15,2,2,2)
+best_individual = object.start(10,columnas_estante,estantes_f,estantes_c)
 print("Mejor individuo")
 print(best_individual)
-mapa=crear_mapa(2,2,2,best_individual)
+mapa=crear_mapa(columnas_estante,estantes_f,estantes_c,best_individual)
 
 mapa_dibujo=[]
 mapa_dibujo = [[0 for j in range(mapa_columnas)] for i in range(mapa_filas)]

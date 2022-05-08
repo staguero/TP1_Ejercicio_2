@@ -27,20 +27,16 @@ class SimulatedAnnealing():
             self.temp = self.temp_in - self.it
             if self.temp <= 0:
                 return [best, cost_best, it, camino, diferencias, probabilidad, temperatura] 
-            try:
+            permuts=random.sample(self.current,k=2)
+            while 20000 in permuts:
                 permuts=random.sample(self.current,k=2)
-                while 20000 in permuts:
-                    permuts=random.sample(self.current,k=2)
-                aux=copy.deepcopy(next)
-                for i in range(0,len(next)):
-                    if aux[i]==permuts[0]:
-                        next[i]=permuts[1]
+            aux=copy.deepcopy(next)
+            for i in range(0,len(next)):
+                if aux[i]==permuts[0]:
+                    next[i]=permuts[1]
 
-                    if aux[i]==permuts[1]:
-                        next[i]=permuts[0]
-            except:
-                print ("Error")
-                pass
+                if aux[i]==permuts[1]:
+                    next[i]=permuts[0]
             cost_current = self.path_cost(self.current)
             cost_next = self.path_cost(next)
             dif = cost_next - cost_current
