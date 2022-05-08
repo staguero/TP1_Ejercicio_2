@@ -5,7 +5,7 @@ class A_Star():
         self.mapa = mapa
         self.current_node = current_node
         self.target_node = target_node
-        self.path_cost = cost #AGREGADO
+        self.path_cost = cost
         self.current_node.parent = self.current_node    #AGREGADO
     
     def in_close_list(self,node):
@@ -24,7 +24,7 @@ class A_Star():
 
     def check_list(self,i,j,minF):
         try:
-            if self.mapa[i][j].id[0:5] == "Shelf":
+            if self.mapa[i][j].id[0:5] == "Shelf" or self.mapa[i][j].id[0:5] == "Bahía":
                 if self.mapa[i][j].id == self.target_node.id: 
                     if minF.id != self.current_node.id:
                         self.mapa[i][j].parent = minF
