@@ -6,7 +6,6 @@ from Simulated_Annealing import *
 import random
 import time 
 
-random.seed(time.process_time)
 
 class Genetic_Algorithm():
     def __init__(self,n_shelfs,n_individuals,orders):
@@ -17,6 +16,7 @@ class Genetic_Algorithm():
         self.population=[]
 
     def create_individual(self):
+        random.seed(time.time())
         value = 1
         individual = [0] * self.n_shelfs
         while value <= self.n_shelfs:
@@ -57,13 +57,14 @@ class Genetic_Algorithm():
                     cost_list.append([inicio,fin,a_star.path_cost])
                 count = count + 1
 
-            temp=len(stops_list)*100
+            temp=len(stops_list)*2000
             simulated_annealing = SimulatedAnnealing(stops_list,cost_list,temp) 
             lowcost_path = simulated_annealing.start()
             total_cost = lowcost_path[1] + total_cost
         return total_cost
 
     def selection(self,total_cost_list):
+        random.seed(time.time())
         ordered_cost=sorted(total_cost_list)
         ordered_population=[]
         for i in ordered_cost:
@@ -99,6 +100,7 @@ class Genetic_Algorithm():
         return ordered_population,combinations
 
     def mutation(self,lista):
+        random.seed(time.time())
         prob = random.random()
         if prob < 0.2:
             while True:
@@ -117,18 +119,6 @@ class Genetic_Algorithm():
         return lista
     
     def crossover(self,father_1,father_2):
-        """cut_1=self.n_shelfs//3
-        cut_2=cut_1*2
-        son_1=[0]*self.n_shelfs
-        son_2=[0]*self.n_shelfs
-        for i in range(cut_1,cut_2+1):
-            son_1[i]=father_2[i]
-            son_2[i]=father_1[i]
-
-        son_1=self.generation(father_1,son_1,cut_1,cut_2)
-        son_2=self.generation(father_2,son_2,cut_1,cut_2)
-
-        return son_1,son_2"""
         cut_point = random.randint(0,len(father_1)-2) #menos 2 para evitar que sea una copia igual al padre
         son_1 = deepcopy(father_2)
         for pos_f1,value_f1 in enumerate(father_1):
@@ -178,20 +168,24 @@ class Genetic_Algorithm():
         self.create_population()
         cost_min = 99999
         flag=0
+        lista_fitness_population=[] #Guarda listas de Población y cada una tiene los [costos de cada mapa de población, , , ,]
         while it < n_it:
             total_cost_list = []
-            for individual in self.population:
+            lista_fitness_population.append([])
+            for it2, individual in enumerate(self.population):
                 map = crear_mapa(columnas_estante,estantes_f,estantes_c,individual)
-                total_cost_list.append(self.fitness(map,mapa_filas,mapa_columnas))
+                lista_fitness_population[it].append(self.fitness(map,mapa_filas,mapa_columnas))
+                listaa=lista_fitness_population[it]
+                total_cost_list.append(listaa[it2])
             s = sum(total_cost_list)
             if min(total_cost_list) < cost_min:
                 cost_min = min(total_cost_list)
                 flag=1
-            print("Suma de costos de cada individuo (mapa) de la poblacion:")
-            print(s)
-            print("Individuo que ha tenido mejor costo hasta ahora: ")
-            print(cost_min)
-            print()
+            #print("Suma de costos de cada individuo (mapa) de la poblacion:")
+            #print(s)
+            #print("Individuo que ha tenido mejor costo hasta ahora: ")
+            #print(cost_min)
+            #print()
 
             for k in range(0,len(total_cost_list)):
                 total_cost_list[k]=total_cost_list[k]/s
@@ -212,4 +206,4 @@ class Genetic_Algorithm():
             self.population.clear()
             self.population = new_population
             it += 1
-        return best_individual
+        return best_individual, lista_fitness_population

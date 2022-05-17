@@ -1,7 +1,8 @@
 import random
 from itertools import permutations 
 import math
-import copy 
+import copy
+import time
 #IMPLEMENTAR QUE LA TEMPERATURA ARRANQUE EN ITERACION/10 Y A SU VEZ SE ACTUALIZE -0.1*ITERACION
 
 class SimulatedAnnealing():
@@ -14,6 +15,7 @@ class SimulatedAnnealing():
         self.current = None
 
     def start(self):
+        random.seed(time.time())
         self.current = copy.deepcopy(self.stops_list)
         next = copy.deepcopy(self.current)
         best=copy.deepcopy(self.current)
@@ -47,7 +49,7 @@ class SimulatedAnnealing():
                     best=copy.deepcopy(self.current)
                     cost_best=cost_current
             else:
-                prob = random.random()
+                prob = dif*random.random()
                 if prob < dif*math.exp((-((self.temp_in-self.temp)/(self.temp_in)))):
                     self.current = copy.deepcopy(next)
             self.it = self.it + 1
