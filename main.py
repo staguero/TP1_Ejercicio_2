@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
             cost_list.append([inicio,fin,a_star.path_cost])
         count = count + 1
-    temp=len(stops_list)*100
+    temp=len(stops_list)*2000
 
     lowcost_path=[]
     cant_temple=50
