@@ -2,7 +2,7 @@ import random
 from itertools import permutations 
 import math
 import copy 
-#IMPLEMENTAR QUE LA TEMPERATURA ARRANQUE EN ITERACION/10 Y A SU VEZ SE ACTUALIZE -0.1*ITERACION
+import numpy as np
 
 class SimulatedAnnealing():
     def __init__(self,stops_list,cost_list,temp_in):
@@ -23,27 +23,31 @@ class SimulatedAnnealing():
         probabilidad=[]
         temperatura=[]
         diferencias=[]
+        probabilidades=[]
+
         while True: 
             self.temp = self.temp_in - self.it
             if self.temp <= 0:
-                return [best, cost_best, it, camino, diferencias, probabilidad, temperatura] 
-            try:
+                #return [best, cost_best, it, camino, diferencias, probabilidad, temperatura, probabilidades] 
+                return camino
+            permuts=random.sample(self.current,k=2)
+            while 20000 in permuts:
                 permuts=random.sample(self.current,k=2)
-                while 20000 in permuts:
-                    permuts=random.sample(self.current,k=2)
-                aux=copy.deepcopy(next)
-                for i in range(0,len(next)):
-                    if aux[i]==permuts[0]:
-                        next[i]=permuts[1]
+            aux=copy.deepcopy(next)
+            for i in range(0,len(next)):
+                if aux[i]==permuts[0]:
+                    next[i]=permuts[1]
 
-                    if aux[i]==permuts[1]:
-                        next[i]=permuts[0]
-            except:
-                print ("Error")
-                pass
+                if aux[i]==permuts[1]:
+                    next[i]=permuts[0]
             cost_current = self.path_cost(self.current)
             cost_next = self.path_cost(next)
             dif = cost_next - cost_current
+            try:
+                expo = math.exp((self.temp_in-self.temp)/self.temp)
+            except OverflowError:
+                expo = float('inf')
+
             if dif < 0:
                 self.current = copy.deepcopy(next)
                 cost_current = cost_next
@@ -52,12 +56,16 @@ class SimulatedAnnealing():
                     cost_best=cost_current
             else:
                 prob = random.random()
-                if prob < dif*math.exp((-((self.temp_in-self.temp)/(self.temp_in)))):
+                probabilidades.append(prob)
+
+                if prob < (1/expo):
                     self.current = copy.deepcopy(next)
+                    cost_current = cost_next
+                
             self.it = self.it + 1
             it.append(self.it)
             
-            probabilidad.append(math.exp((-((self.temp_in-self.temp)/(self.temp_in)))))
+            probabilidad.append(1/expo)
             temperatura.append(self.temp)
             diferencias.append(dif)
 

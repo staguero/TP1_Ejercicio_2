@@ -85,27 +85,30 @@ if __name__ == "__main__":
             cost_list.append([inicio,fin,a_star.path_cost])
         count = count + 1
     temp=len(stops_list)*100
-    simulated_annealing = SimulatedAnnealing(stops_list,cost_list,temp) 
-    lowcost_path=simulated_annealing.start() #return [best, cost_best, it, camino, diferencias, probabilidad, temperatura] 
-    x=list(range(1, temp+1))
-    fig, axs = plt.subplots(2, 2)
-    axs[0, 0].plot(x, list(lowcost_path[5]))
-    axs[0, 0].set_title('Probabilidad')
-    axs[0, 0].set_xlabel('Iteración')
-    axs[0, 1].plot(x, list(lowcost_path[4]), 'tab:orange')
-    axs[0, 1].set_title('Diferencia')
-    axs[0, 1].set_xlabel('Iteración')
-    axs[1, 0].plot(x, list(lowcost_path[6]), 'tab:green')
-    axs[1, 0].set_title('Temperatura')
-    axs[1, 0].set_xlabel('Iteración')
-    axs[1, 1].plot(x, lowcost_path[3], 'tab:red')
-    axs[1, 1].set_title('Costo del camino de secuencia de picking actual')
-    axs[1, 1].set_xlabel('Iteración')
-    fig.tight_layout()
-    fig.show()
 
-    print('La temperatura inicial es: ',lowcost_path[2][-1], "°C")
-    print("El mejor camino encontrado es:")
-    print(lowcost_path[0])
-    print("Y el costo del recorrido es: %f " %(lowcost_path[1]))
+    lowcost_path=[]
+    cant_temple=50
+    for f in range(1, cant_temple):
+        simulated_annealing = SimulatedAnnealing(stops_list,cost_list,temp)
+        lowcost_path.append(simulated_annealing.start()) #return solo "cost_best"  [[4,5,6],[5,3,4],[8,9,10],[4,7,6]]
+        del(simulated_annealing)
+    
+    promedio=[]
+    sum=0
+    
+    for i in range(len(lowcost_path[0])):
+        for lista in lowcost_path:
+            sum=sum+lista[i]
+        sum=sum/len(lowcost_path)   
+        promedio.append(sum)
+
+    
+    x=list(range(1, temp+1))
+    for f in range(1, cant_temple):
+        #namess='Temple N° ' + str(f)
+        plt.plot(x, lowcost_path[f-1]) #, label = namess
+    plt.plot(x,promedio,"w")
+    plt.title('Costo de Picking -'+str(cant_temple)+' Temples'+'- '+str((len(stops_list)-2))+' objetos')
+    plt.xlabel('Iteración')
+    plt.show()
     input()
