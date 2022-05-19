@@ -84,53 +84,52 @@ if __name__ == "__main__":
 
             cost_list.append([inicio,fin,a_star.path_cost])
         count = count + 1
-        
-    temp=int(factorial(len(stops_list))/2)  #*500
+    if len(stops_list)>= 10:
+        temp=len(stops_list)*2000
+    else:    
+        temp=factorial(len(stops_list)-2)  #*500
+        print("Factorial de: ",(len(stops_list)-2))
     print("La temperatura es: ",temp,'°C')
      # Gráfico Nuevo Lunes 09/05/22 **tambien modifique simulated_annealing.start() para que devuelva menos cosas
-    #lowcost_path=[]
-    #cant_temple=11
-    #for f in range(1, cant_temple):
-    #    simulated_annealing = SimulatedAnnealing(stops_list,cost_list,temp)
-    #    lowcost_path.append(simulated_annealing.start()) #return solo "cost_best"
-    #    del(simulated_annealing)
-    #a=lowcost_path[0]
-    #b=lowcost_path[5]
-    #c=lowcost_path[9]
-    #print(a[20])
-    #print(b[20])
-    #print(c[20])
-    #x=list(range(1, temp+1))
-    #f=0
-    #for f in range(1, cant_temple):
-    #    namess='Temple N° ' + str(f)
-    #    plt.plot(x, lowcost_path[f-1], label = namess)
+    lowcost_path=[]
+    cant_temple=150
+    for f in range(1, cant_temple):
+        simulated_annealing = SimulatedAnnealing(stops_list,cost_list,temp)
+        lowcost_path.append(simulated_annealing.start()) #return solo "cost_best"
+        del(simulated_annealing)
+    x=list(range(1, temp+1))
+    f=0
+    for f in range(1, cant_temple):
+        namess='Temple N° ' + str(f)
+        plt.plot(x, lowcost_path[f-1], label = namess)
     #plt.legend()
-    #plt.show()
-    #input()
+    plt.title('Costo de Picking -'+str(cant_temple)+' Temples'+'- '+str((len(stops_list)-2))+' objetos')
+    plt.xlabel('Iteración')
+    plt.show()
+    input()
 
     ######  No borrar implementación estadística de temple   ######
-    simulated_annealing = SimulatedAnnealing(stops_list,cost_list,temp)
-    lowcost_path=simulated_annealing.start() #return [best, cost_best, it, camino, diferencias, probabilidad, temperatura] 
-    x=list(range(1, temp+1))
-    fig, axs = plt.subplots(2, 2)
-    axs[0, 0].plot(x, list(lowcost_path[5]))
-    axs[0, 0].set_title('Probabilidad')
-    axs[0, 0].set_xlabel('Iteración')
-    axs[0, 1].plot(x, list(lowcost_path[4]), 'tab:orange')
-    axs[0, 1].set_title('Diferencia')
-    axs[0, 1].set_xlabel('Iteración')
-    axs[1, 0].plot(x, list(lowcost_path[6]), 'tab:green')
-    axs[1, 0].set_title('Temperatura')
-    axs[1, 0].set_xlabel('Iteración')
-    axs[1, 1].plot(x, lowcost_path[3], 'tab:red')
-    axs[1, 1].set_title('Costo del camino de secuencia de picking actual')
-    axs[1, 1].set_ylim((0, max(lowcost_path[3])))   # set the ylim to bottom, top
-    axs[1, 1].set_xlabel('Iteración')
-    fig.tight_layout()
-    fig.show()
-    print('La temperatura inicial es: ',lowcost_path[2][-1], "°C")
-    print("El mejor camino encontrado es:")
-    print(lowcost_path[0])
-    print("Y el costo del recorrido es: %f " %(lowcost_path[1]))
-    input()
+    #simulated_annealing = SimulatedAnnealing(stops_list,cost_list,temp)
+    #lowcost_path=simulated_annealing.start() #return [best, cost_best, it, camino, diferencias, probabilidad, temperatura] 
+    #x=list(range(1, temp+1))
+    #fig, axs = plt.subplots(2, 2)
+    #axs[0, 0].plot(x, list(lowcost_path[5]))
+    #axs[0, 0].set_title('Probabilidad')
+    #axs[0, 0].set_xlabel('Iteración')
+    #axs[0, 1].plot(x, list(lowcost_path[4]), 'tab:orange')
+    #axs[0, 1].set_title('Diferencia')
+    #axs[0, 1].set_xlabel('Iteración')
+    #axs[1, 0].plot(x, list(lowcost_path[6]), 'tab:green')
+    #axs[1, 0].set_title('Temperatura')
+    #axs[1, 0].set_xlabel('Iteración')
+    #axs[1, 1].plot(x, lowcost_path[3], 'tab:red')
+    #axs[1, 1].set_title('Costo del camino de secuencia de picking actual')
+    #axs[1, 1].set_ylim((0, max(lowcost_path[3])))   # set the ylim to bottom, top
+    #axs[1, 1].set_xlabel('Iteración')
+    #fig.tight_layout()
+    #fig.show()
+    #print('La temperatura inicial es: ',lowcost_path[2][-1], "°C")
+    #print("El mejor camino encontrado es:")
+    #print(lowcost_path[0])
+    #print("Y el costo del recorrido es: %f " %(lowcost_path[1]))
+    #input()

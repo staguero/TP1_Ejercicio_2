@@ -3,6 +3,7 @@ from itertools import permutations
 import math
 import copy 
 import time
+import numpy as np
 
 
 class SimulatedAnnealing():
@@ -15,7 +16,7 @@ class SimulatedAnnealing():
         self.current = None
 
     def start(self):
-        random.seed(time.process_time)
+        random.seed(time.time())
         self.current = copy.deepcopy(self.stops_list)
         next = copy.deepcopy(self.current)
         best=copy.deepcopy(self.current)
@@ -32,23 +33,19 @@ class SimulatedAnnealing():
                 return costo_mejor
                 #return camino #para visualizar el camino y no solo los mejores en cada iteración
                 #return [best, cost_best, it, camino, diferencias, probabilidad, temperatura] 
-            try:
+            permuts=random.sample(self.current,k=2)
+            while 20000 in permuts:
                 permuts=random.sample(self.current,k=2)
-                while 20000 in permuts:
-                    permuts=random.sample(self.current,k=2)
-                aux=copy.deepcopy(next)
-                c1=True
-                c2=True
-                for i in range(0,len(next)):
-                    if aux[i]==permuts[0] and c1:
-                        c1=False
-                        next[i]=permuts[1]
-                    if aux[i]==permuts[1] and c2:
-                        c2=False
-                        next[i]=permuts[0]
-            except:
-                print ("Error")
-                pass
+            aux=copy.deepcopy(next)
+            c1=True
+            c2=True
+            for i in range(0,len(next)):
+                if aux[i]==permuts[0] and c1:
+                    c1=False
+                    next[i]=permuts[1]
+                if aux[i]==permuts[1] and c2:
+                    c2=False
+                    next[i]=permuts[0]
             cost_current = self.path_cost(self.current)
             cost_next = self.path_cost(next)
             dif = cost_next - cost_current
@@ -59,12 +56,13 @@ class SimulatedAnnealing():
                     best=copy.deepcopy(self.current)
                     cost_best=cost_current
             else:
-                prob = dif*random.random()
-                if prob < dif*math.exp((-((self.temp_in-self.temp)/(self.temp_in)))):
+                prob = random.random()
+                #if prob < dif*np.exp((-((self.temp_in-self.temp)/(self.temp_in)))):
+                if prob < (1/np.exp((self.temp_in-self.temp)/(self.temp))):
                     self.current = copy.deepcopy(next)
             self.it = self.it + 1
             it.append(self.it)
-            probabilidad.append(math.exp((-((self.temp_in-self.temp)/(self.temp_in)))))
+            probabilidad.append((1/np.exp((self.temp_in-self.temp)/(self.temp))))
             temperatura.append(self.temp)
             diferencias.append(dif)
             next=copy.deepcopy(self.current)
